@@ -39,17 +39,43 @@ public class DisplayWord : MonoBehaviour
 
     }
 
+    /* private async void DisplayWordsFromDB()
+     {
+         var task = databaseAccess.GetWordsFromDatabase();
+         var result = await task;
+         var output = "";
+         foreach (var text in result)
+         {
+             output += text.Text + " Language: " + text.Language;
+         }
+         wordOutput.text = output;
+         wOutput.text = output;
+     }**/
+
     private async void DisplayWordsFromDB()
     {
         var task = databaseAccess.GetWordsFromDatabase();
         var result = await task;
-        var output = "";
+        var output = " ";
         foreach (var text in result)
         {
-            output += text.Text + " Language: " + text.Language;
+            output = text.Text;
         }
-        wordOutput.text = output;
         wOutput.text = output;
+        wordOutput.text = output;
+
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Movement snake = collision.collider.GetComponent<Movement>();
+
+        if (snake != null)
+        {
+            Debug.Log(gameObject.GetComponent<TMP_Text>().text);
+            //databaseAccess.SaveWordToDatabase(gameObject.GetComponent<TMP_Text>().text, "Italian");
+            Destroy(gameObject);
+            return;
+        }
     }
 }
 

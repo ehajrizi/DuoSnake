@@ -46,6 +46,12 @@ public class DatabaseAccess : MonoBehaviour
         return word;
     }
 
+    public async void SaveWordToDatabase(string Text, string Language)
+    {
+        var document = new BsonDocument { { Text, Language } };
+        await collection.InsertOneAsync(document);
+    }
+
 }
 
 public class Word{
