@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public class DatabaseAccess : MonoBehaviour
@@ -11,13 +13,14 @@ public class DatabaseAccess : MonoBehaviour
     MongoClient client = new MongoClient("mongodb+srv://test:test@cluster0.bmttq.mongodb.net/DuoSnakeDB?retryWrites=true&w=majority");
     IMongoDatabase database;
     IMongoCollection<BsonDocument> collection;
+    IMongoCollection<BsonDocument> sentenceCollection;
 
     // Start is called before the first frame update
     void Start()
     {
         database = client.GetDatabase("DuoSnakeDB");
-        collection = database.GetCollection<BsonDocument>("WordCollection");
-
+        collection = database.GetCollection<BsonDocument>("WordCollection2");
+        sentenceCollection = database.GetCollection<BsonDocument>("SentencesCollection");
     }
 
     public async Task<List<Word>> GetWordsFromDatabase(){
@@ -33,17 +36,36 @@ public class DatabaseAccess : MonoBehaviour
         return wordsSelected;
     }
 
+    public async Task<List<Sentence>> GetSentencesFromDatabase()
+    {
 
-    private Word Deserialize(string rawJson) {
-        var word = new Word();
+        var allSentencesTask = sentenceCollection.FindAsync(new BsonDocument());
+        var sentencesAwaited = await allSentencesTask;
 
-        var stringWithoutID = rawJson.Substring(rawJson.IndexOf("),") + 4);
+        List<Sentence> sentencesSelected = new List<Sentence>();
+        foreach (var text in sentencesAwaited.ToList())
+        {
+            sentencesSelected.Add(DeserializeSentence(text.ToString()));
+        }
 
-        var text = stringWithoutID.Substring(0, stringWithoutID.IndexOf(":") - 2);
-        var language = stringWithoutID.Substring(stringWithoutID.IndexOf(":") + 2, stringWithoutID.IndexOf("}") - stringWithoutID.IndexOf(":") - 8);
-        word.Text = text;
-        word.Language = language;
+        return sentencesSelected;
+    }
+
+
+    private Word Deserialize(string rawJson)
+    {
+        var bsonDocument = BsonDocument.Parse(rawJson);
+        var word = BsonSerializer.Deserialize<Word>(bsonDocument);
+
         return word;
+    }
+
+    private Sentence DeserializeSentence(string rawJson)
+    {
+        var bsonDocument = BsonDocument.Parse(rawJson);
+        var sentence = BsonSerializer.Deserialize<Sentence>(bsonDocument);
+
+        return sentence;
     }
 
     public async void SaveWordToDatabase(string Text, string Language)
@@ -52,9 +74,4 @@ public class DatabaseAccess : MonoBehaviour
         await collection.InsertOneAsync(document);
     }
 
-}
-
-public class Word{
-    public string Text { get; set; }
-    public string Language { get; set; }
 }

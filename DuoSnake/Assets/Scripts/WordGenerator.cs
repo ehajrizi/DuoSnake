@@ -39,9 +39,26 @@ public class WordGenerator : MonoBehaviour
                                             "appartamento","rappresentare "};
     public string[] createdSentence = null;
 
+    /*
     public string GetSentence() {
         int randomIndex = Random.Range(0, sentenceList.Count - 1);
         string sentence = sentenceList.Cast<DictionaryEntry>().ElementAt(1).Value.ToString();
+        Debug.Log(randomIndex);
+        return sentence;
+    }**/
+
+    public string GetSentence()
+    {
+        int randomIndex = Random.Range(0, sentenceList.Count - 1);
+        string sentence = sentenceList.Cast<DictionaryEntry>().ElementAt(1).Value.ToString();
+        Debug.Log(randomIndex);
+        return sentence;
+    }
+
+    public string GetChosenSentence()
+    {
+        int randomIndex = Random.Range(0, sentenceList.Count - 1);
+        string sentence = sentenceList.Cast<DictionaryEntry>().ElementAt(1).Key.ToString();
         Debug.Log(randomIndex);
         return sentence;
     }
