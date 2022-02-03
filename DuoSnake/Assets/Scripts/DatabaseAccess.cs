@@ -21,6 +21,7 @@ public class DatabaseAccess : MonoBehaviour
         database = client.GetDatabase("DuoSnakeDB");
         collection = database.GetCollection<BsonDocument>("WordCollection2");
         sentenceCollection = database.GetCollection<BsonDocument>("SentencesCollection");
+        
     }
 
     public async Task<List<Word>> GetWordsFromDatabase(){

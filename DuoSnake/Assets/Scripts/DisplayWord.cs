@@ -3,193 +3,202 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
+
 using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 public class DisplayWord : MonoBehaviour
 {
     private DatabaseAccess databaseAccess;
-    private WordGenerator wordGenerator;
-
-
-    //private TextMeshPro[] wordOutput;
-    private TextMeshPro wordOutput;
+    private GameObject wordOutput;
+    [SerializeField]
+    private GameObject wordOutputPrefab;
     private TextMeshPro sentenceOutput;
-
+    private TextMeshPro correctWords;
+    
     private RectTransform rectTra;
-    private static int i;
-
+    private static int count;
     float x;
     float y;
     float z;
     Vector3 pos;
+    static int index;
+    //bool indexChanged = false;
+    static string correctWord;
+    static string[] correctWordss;
 
-    // Start is called before the first frame update
+    public List<GameObject> colliderArray;
+    private List<GameObject> colliders;
+
+
     void Start()
     {
-        x = UnityEngine.Random.Range(1, 7);
-        y = UnityEngine.Random.Range(4, -2);
-        z = 0;
-        i = 0;
-        pos = new Vector3(x, y, z);
-        databaseAccess = GameObject.FindGameObjectWithTag("DatabaseAccess").GetComponent<DatabaseAccess>();
-        wordGenerator = GameObject.FindGameObjectWithTag("WordGenerator").GetComponent<WordGenerator>();
-        wordOutput = GetComponentInChildren<TextMeshPro>();
-        sentenceOutput = GameObject.FindGameObjectWithTag("SentenceOutput").GetComponentInChildren<TextMeshPro>();
-        rectTra = GetComponentInChildren<RectTransform>();
-        rectTra.position = pos;
 
-       // DisplaySentencesFromDB();
-        Invoke("DisplaySentencesFromDB", 0f);
-        //Invoke("ShowWords", 0f);
-        //Invoke("ShowChosenSentence", 0f);
+        x = Random.Range(-7, 7);
+        y = Random.Range(-8, 6);
+        z = 0;
+        pos = new Vector3(x, y, z);
+        //if (!indexChanged)
+        //{
+        //    index = 0;
+        //}//playAgain me u ndrru
+        databaseAccess = GameObject.FindGameObjectWithTag("DatabaseAccess").GetComponent<DatabaseAccess>();
+        sentenceOutput = GameObject.FindGameObjectWithTag("SentenceOutput").GetComponentInChildren<TextMeshPro>();
+        correctWords = GameObject.FindGameObjectWithTag("CorrectWord").GetComponentInChildren<TextMeshPro>();
+        if (wordOutput != null)
+        {
+            rectTra = GetComponentInChildren<RectTransform>();
+            rectTra.position = pos;
+        }
+        
+        correctWord = " ";
+        colliders = new List<GameObject>();
+        Invoke("DisplaySentenceFromDB", 0f);
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if (i >= 7) {
-        //    CancelInvoke("ShowWords");
-        //}
 
-        //CancelInvoke("ShowWords");
     }
 
- 
-    private async void DisplayWordsFromDB() //extra words
-    {
-        var task = databaseAccess.GetWordsFromDatabase();
-        var result = await task;
-        var output = "";
-        foreach (var text in result)
-        {
-            output = text.TEXT;
-        }
-        wordOutput.text = output;
-    }
 
-    private async void DisplaySentencesFromDB()
+    public async Task<int> ReturnCount()
     {
         var task = databaseAccess.GetSentencesFromDatabase();
         var result = await task;
+        int nr = result.Count;
+        return nr;
+    }
 
-        int randomIndex = UnityEngine.Random.Range(0, result.Count);
-        Debug.Log("RANDOM INDEX: "+ randomIndex);
-        string sentence = result[randomIndex].sentence.ToString();
+    //public async Task<int> GenerateRandomNumber()
+    //{
+    //    var nr = ReturnCount();
+    //    bound = await nr;
+    //    randomIndex = UnityEngine.Random.Range(0, bound);
+    //    return randomIndex;
+    //}
 
+    private async Task<string[]> DisplaySentenceFromDB()
+    {
+        var task = databaseAccess.GetSentencesFromDatabase();
+        var result = await task;
+        //var task2 = GenerateRandomNumber();
+        //int nr = await task2;
+        //bound = result.Count;
+        Sentence s = result[index];
+        string sentence = s.sentence;
         sentenceOutput.text = sentence;
         sentenceOutput.GetComponentInChildren<RectTransform>().position = new Vector3(0, 10, 0);
+        string[] words2 = s.words;
+        string[] extraWords = s.extra_words;
+        string translation = s.translation;
 
-        string[] words = result[randomIndex].words;
-
-        if (i < words.Length)
+        count++; //1
+        int a = 0;
+        int b = 0;
+        if (count >= 1 && count < words2.Length)
         {
-            wordOutput.text = words[i];
-            i++;
+            while (a < words2.Length)
+            {
+                wordOutput = Instantiate(wordOutputPrefab) as GameObject;
+                wordOutputPrefab.GetComponentInChildren<TextMeshPro>().text = words2[a];
+                //wordOutputPrefab.GetComponentInChildren<TextMeshPro>().GetComponentInChildren<RectTransform>().anchoredPosition = new Vector3(UnityEngine.Random.Range(0, 1), UnityEngine.Random.Range(0, 1), 0);
+                a++;
+            }
+
+            while (b < 2)
+            {
+                wordOutput = Instantiate(wordOutputPrefab) as GameObject;
+                wordOutputPrefab.GetComponentInChildren<TextMeshPro>().text = extraWords[UnityEngine.Random.Range(0, extraWords.Length)];
+                //wordOutputPrefab.GetComponentInChildren<TextMeshPro>().GetComponentInChildren<RectTransform>().anchoredPosition = new Vector3(UnityEngine.Random.Range(0, 1), UnityEngine.Random.Range(0, 1), 0);
+                b++;
+            }
         }
 
-        /*
-        foreach (var text in result)
+        //index++;
+        //indexChanged = true;
+        Debug.Log(index);
+        if (index == result.Count)
         {
-            output = text.sentence;
+            index = 0;
         }
-        sentenceOutput.text = output;
-        **/
+        return words2;
     }
 
-    public string ShowSentence()
-    {
 
 
-        string sentence = wordGenerator.GetSentence();
-        //if (wordGenerator.isChosen)
-        //{
-
-        return sentence;
-    }
-    /*
-    public void ShowChosenSentence()
-    {
-        string sentence = wordGenerator.GetChosenSentence();
-
-        sentenceOutput.text = sentence;
-        sentenceOutput.GetComponentInChildren<RectTransform>().position = new Vector3(0, 10, 0);
-    }
-
-    **/
-    /*
-    public void ShowWords()
-    {
-        string s = ShowSentence();
-
-        string[] words = s.Split(' ');
-
-        if (i < words.Length)
-        {
-            wordOutput.text = words[i];
-            i++;
-        }
-
-    
-        //for (i = 0; i < words.Length; i++) {
-        //    wordOutput.text = words[i];
-        //}
-        //   Instantiate(wordOutput, pos, Quaternion.identity);
-        //++i;
-
-        //    return;
-
-        //}
-
-        //wordOutput[i].text = words[i];
-
-        //GameObject.FindObjectOfType<TextMeshPro>().text = words[i];
-
-        //foreach (string w in words)
-        //{
-        //    TextMeshPro tmp = Instantiate(wordOutput, transform.position, Quaternion.identity);
-        //    tmp.text = w;
-        //}
-
-    }**/
-
-    
-    private void OnCollisionEnter2D(Collision2D collision)
+    private async void OnCollisionEnter2D(Collision2D collision)
     {
         Movement snake = collision.collider.GetComponent<Movement>();
 
+        if (collision.gameObject.tag == "Collider")
+        {
+            GameObject cContainer = collision.gameObject;
+            Debug.Log("cContainer: " + cContainer.name);
+
+            colliders.Add(cContainer);
+        }
+        for (int i = 0; i < colliders.Count; i++)
+        {
+            Debug.Log(i + " " + colliders[i]);
+        }
         if (snake != null)
         {
-            //string[] s = ShowSentence().Split(' ');
-            List<string> s = ShowSentence().Split(' ').ToList();
+            var wo = DisplaySentenceFromDB();
+            var res = await wo;
+            string[] w = res;
+
+            
+            //colliderArray = colliders.Add(GameObject) as List<GameObject>;
+            //string[] correctWordss = null;
+
+            //gOtext += gameObject.GetComponent<TextMeshPro>().text;
             Debug.Log(gameObject.GetComponent<TextMeshPro>().text);
 
-            for (int i = 0; i < s.Count; i++)
+            for (int i = 0; i < w.Length; i++)
             {
-                if (s[i].Equals(gameObject.GetComponent<TextMeshPro>().text))
+
+                if (w.Contains(gameObject.GetComponent<TextMeshPro>().text))
                 {
                     Debug.Log("Bravo!");
+                    correctWord += " " + gameObject.GetComponent<TextMeshPro>().text;
+                    //correctWordss[i++] = gameObject.GetComponent<TextMeshPro>().text;
+                    //correctWord += correctWordss[i];
+                    correctWords.text = correctWord;
+                    correctWords.color = Color.green;
+                    correctWords.GetComponentInChildren<RectTransform>().position = new Vector3(0.3f, 8.5f, 0);
+                    gameObject.SetActive(false);
                     break;
-                    //return;
                 }
-                if (s.Contains(gameObject.GetComponent<TextMeshPro>().text) && !(s[i].Equals(gameObject.GetComponent<TextMeshPro>().text)))
+
+
+                if (w.Contains(gameObject.GetComponent<TextMeshPro>().text) && !(w[i].Equals(gameObject.GetComponent<TextMeshPro>().text)))
                 {
                     Debug.Log("Rendi Gabim!");
+                    gameObject.SetActive(false);
                     break;
-
                 }
-                if (!(s.Contains(gameObject.GetComponent<TextMeshPro>().text)))
+                if (!(w.Contains(gameObject.GetComponent<TextMeshPro>().text)))
                 {
                     Debug.Log("LOSER!");
+                    gameObject.SetActive(false);
                     break;
                 }
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
+            Debug.Log("Correct word: " + correctWord);
+            gameObject.SetActive(false);
 
-            Destroy(gameObject);
         }
-    }
 
+
+    }
 }
+
+
+
+
 
