@@ -66,6 +66,11 @@ public class DisplayWord : MonoBehaviour
 
     }
 
+    public void LoadScene()
+    {
+        SceneManager.LoadSceneAsync("GoodJob");
+    }
+
     public async Task<int> ReturnCount()
     {
         var task = databaseAccess.GetSentencesFromDatabase();
@@ -130,7 +135,6 @@ public class DisplayWord : MonoBehaviour
     }
 
 
-
     private async void OnCollisionEnter2D(Collision2D collision)
     {
         Movement snake = collision.collider.GetComponent<Movement>();
@@ -161,7 +165,6 @@ public class DisplayWord : MonoBehaviour
 
             for (int i = 0; i < w.Length; i++)
             {
-
                 if (w.Contains(gameObject.GetComponent<TextMeshPro>().text))
                 {
                     Debug.Log("Bravo!");
@@ -174,18 +177,18 @@ public class DisplayWord : MonoBehaviour
                     gameObject.SetActive(false);
                     break;
                 }
-
-
-                if (w.Contains(gameObject.GetComponent<TextMeshPro>().text) && !(w[i].Equals(gameObject.GetComponent<TextMeshPro>().text)))
+                else if (w.Contains(gameObject.GetComponent<TextMeshPro>().text) && !(w[i].Equals(gameObject.GetComponent<TextMeshPro>().text)))
                 {
                     Debug.Log("Rendi Gabim!");
                     gameObject.SetActive(false);
+                    SceneManager.LoadScene("GameOver");
                     break;
                 }
-                if (!(w.Contains(gameObject.GetComponent<TextMeshPro>().text)))
+                else if (!(w.Contains(gameObject.GetComponent<TextMeshPro>().text)))
                 {
                     Debug.Log("LOSER!");
                     gameObject.SetActive(false);
+                    SceneManager.LoadScene("GameOver");
                     break;
                 }
                 gameObject.SetActive(false);
@@ -194,19 +197,9 @@ public class DisplayWord : MonoBehaviour
             
             if (correctWord.Split(' ').Length == (w.Length + 1))
             {
-                SceneManager.LoadSceneAsync("GoodJob");
+                Invoke("LoadScene", 1);
 
             }
-
         }
-
-
-
-
     }
 }
-
-
-
-
-
