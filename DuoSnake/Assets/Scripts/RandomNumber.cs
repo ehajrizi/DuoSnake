@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class RandomNumber : MonoBehaviour
 {
-    private DisplayWord displayWord;
+    private SnakeRoute snakeRoute;
     int randomIndex;
     int bound;
     // Start is called before the first frame update
@@ -22,7 +22,7 @@ public class RandomNumber : MonoBehaviour
 
     public async Task<int> GenerateRandomNumber()
     {
-        var nr = displayWord.ReturnCount();
+        var nr = snakeRoute.ReturnCount();
         bound = await nr;
         randomIndex = Random.Range(0, bound);
         return randomIndex;

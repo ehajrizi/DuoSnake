@@ -24,19 +24,6 @@ public class DatabaseAccess : MonoBehaviour
         
     }
 
-    public async Task<List<Word>> GetWordsFromDatabase(){
-
-        var allWordsTask = collection.FindAsync(new BsonDocument());
-        var wordsAwaited = await allWordsTask;
-
-        List<Word> wordsSelected = new List<Word>();
-        foreach (var text in wordsAwaited.ToList()) {
-            wordsSelected.Add(Deserialize(text.ToString()));
-        }
-
-        return wordsSelected;
-    }
-
     public async Task<List<Sentence>> GetSentencesFromDatabase()
     {
 
@@ -52,15 +39,6 @@ public class DatabaseAccess : MonoBehaviour
         return sentencesSelected;
     }
 
-
-    private Word Deserialize(string rawJson)
-    {
-        var bsonDocument = BsonDocument.Parse(rawJson);
-        var word = BsonSerializer.Deserialize<Word>(bsonDocument);
-
-        return word;
-    }
-
     private Sentence DeserializeSentence(string rawJson)
     {
         var bsonDocument = BsonDocument.Parse(rawJson);
@@ -69,10 +47,5 @@ public class DatabaseAccess : MonoBehaviour
         return sentence;
     }
 
-    public async void SaveWordToDatabase(string Text, string Language)
-    {
-        var document = new BsonDocument { { Text, Language } };
-        await collection.InsertOneAsync(document);
-    }
 
 }

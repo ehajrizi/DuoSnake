@@ -11,10 +11,3 @@ public class Sentence
     public string[] extra_words { get; set; }
     public string translation { get; set; }
 }
-
-public class Word
-{
-    public ObjectId _id { get; set; }
-    public string TEXT { get; set; }
-    public string LANGUAGE { get; set; }
-}

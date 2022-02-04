@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
-public class DisplayWord : MonoBehaviour
+public class SnakeRoute : MonoBehaviour
 {
     private DatabaseAccess databaseAccess;
     private GameObject wordOutput;
@@ -146,7 +146,7 @@ public class DisplayWord : MonoBehaviour
     private async void OnCollisionEnter2D(Collision2D collision)
     {
 
-        Movement snake = collision.collider.GetComponent<Movement>();
+        DuoSnake snake = collision.collider.GetComponent<DuoSnake>();
         ContactPoint2D[] contactPoints = collision.contacts;
         if (snake != null)
         {
