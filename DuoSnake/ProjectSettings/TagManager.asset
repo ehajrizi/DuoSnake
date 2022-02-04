@@ -9,6 +9,7 @@ TagManager:
   - SentenceOutput
   - Collider
   - CorrectWord
+  - Wall
   layers:
   - Default
   - TransparentFX

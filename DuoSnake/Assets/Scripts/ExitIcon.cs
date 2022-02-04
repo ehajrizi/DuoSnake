@@ -5,9 +5,30 @@ using UnityEngine.SceneManagement;
 
 public class ExitIcon : MonoBehaviour
 {
+   
+    public static bool GameIsPaused = false;
+    void Pause()
+    {
+       
+        Time.timeScale = 0f;
+        GameIsPaused = true;
+    }
+
     public void GoToScene(string sceneName)
     {
+        Pause();
+        if (GameIsPaused) {
+            Debug.Log("The game is paused");
+        }
         SceneManager.LoadScene(sceneName);
+
+    }
+    public void Resume()
+    {
+        
+        Time.timeScale = 1f;
+        GameIsPaused = false;
+        SceneManager.LoadScene("DuoSnakeGame");
     }
 
     /*public static bool GameIsPaused = false;

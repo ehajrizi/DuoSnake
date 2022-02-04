@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Movement : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class Movement : MonoBehaviour
     private void Awake()
     {
         gridPosition = new Vector2Int(0, 0);
-        gridMoveTimerMax = 0.3f;
+        gridMoveTimerMax = 0.6f;
         gridMoveTimer = gridMoveTimerMax;  //shkaku i qesaj every 0.3second snake leviz ne grid
         gridMoveDirection = new Vector2Int(1, 0); // by default snake leviz ne te djathte
 
@@ -25,7 +26,7 @@ public class Movement : MonoBehaviour
     {
         HandleInput();
         HandleGridMovement();
-
+      
 
     }
     private void HandleInput()
@@ -88,4 +89,19 @@ public class Movement : MonoBehaviour
 
         return n;
     }
+  
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag=="Wall")
+        {
+            GetComponent<Rigidbody2D>().isKinematic = true;
+            
+            SceneManager.LoadScene("GameOver");
+
+        }
+
+
+    }
+
 }

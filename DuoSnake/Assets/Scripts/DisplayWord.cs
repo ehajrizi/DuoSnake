@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class DisplayWord : MonoBehaviour
 {
@@ -61,9 +62,9 @@ public class DisplayWord : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+       
 
     }
-
 
     public async Task<int> ReturnCount()
     {
@@ -91,7 +92,7 @@ public class DisplayWord : MonoBehaviour
         Sentence s = result[index];
         string sentence = s.sentence;
         sentenceOutput.text = sentence;
-        sentenceOutput.GetComponentInChildren<RectTransform>().position = new Vector3(0, 10, 0);
+        sentenceOutput.GetComponentInChildren<RectTransform>().position = new Vector3(-0.01995162f, 9.16f, 0);
         string[] words2 = s.words;
         string[] extraWords = s.extra_words;
         string translation = s.translation;
@@ -168,8 +169,8 @@ public class DisplayWord : MonoBehaviour
                     //correctWordss[i++] = gameObject.GetComponent<TextMeshPro>().text;
                     //correctWord += correctWordss[i];
                     correctWords.text = correctWord;
-                    correctWords.color = Color.green;
-                    correctWords.GetComponentInChildren<RectTransform>().position = new Vector3(0.3f, 8.5f, 0);
+                    //correctWords.color = Color.green;
+                    correctWords.GetComponentInChildren<RectTransform>().position = new Vector3(0.4528f, 7.4f, 0);
                     gameObject.SetActive(false);
                     break;
                 }
@@ -190,9 +191,16 @@ public class DisplayWord : MonoBehaviour
                 gameObject.SetActive(false);
             }
             Debug.Log("Correct word: " + correctWord);
-            gameObject.SetActive(false);
+            
+            if (correctWord.Split(' ').Length == (w.Length + 1))
+            {
+                SceneManager.LoadSceneAsync("GoodJob");
+
+            }
 
         }
+
+
 
 
     }
