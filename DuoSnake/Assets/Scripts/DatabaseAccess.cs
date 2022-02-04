@@ -15,7 +15,6 @@ public class DatabaseAccess : MonoBehaviour
     IMongoCollection<BsonDocument> collection;
     IMongoCollection<BsonDocument> sentenceCollection;
 
-    // Start is called before the first frame update
     void Start()
     {
         database = client.GetDatabase("DuoSnakeDB");

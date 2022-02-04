@@ -1,11 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
 
 public class GameManager : MonoBehaviour
 {
-    //reference me thirre me lehte prej komponenteve tjera
     public static GameManager instance;
 
     public event Action gameStarted, scoreIncremented, gameLost;
@@ -29,11 +27,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    //? - not null
     public void StartGame()
     {
         gameStarted?.Invoke();
-        Debug.Log("GAme has started!");
     }
 
     public void LoseGame()

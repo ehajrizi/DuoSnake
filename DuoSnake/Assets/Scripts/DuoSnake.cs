@@ -9,16 +9,14 @@ public class DuoSnake : MonoBehaviour
 
     private Vector2Int gridPosition;
 
-    //nje variabel per me e store kohen untill the next movement
     private float gridMoveTimer;
-    //nje variabel per me store kohen between moves
     private float gridMoveTimerMax;
     private void Awake()
     {
         gridPosition = new Vector2Int(0, 0);
-        gridMoveTimerMax = 0.6f;
-        gridMoveTimer = gridMoveTimerMax;  //shkaku i qesaj every 0.3second snake leviz ne grid
-        gridMoveDirection = new Vector2Int(1, 0); // by default snake leviz ne te djathte
+        gridMoveTimerMax = 0.3f;
+        gridMoveTimer = gridMoveTimerMax; 
+        gridMoveDirection = new Vector2Int(1, 0); 
 
     }
 
@@ -26,8 +24,6 @@ public class DuoSnake : MonoBehaviour
     {
         HandleInput();
         HandleGridMovement();
-      
-
     }
     private void HandleInput()
     {
@@ -41,7 +37,7 @@ public class DuoSnake : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            if (gridMoveDirection.y != +1) //mujna me shku down if we are not currentyly going down
+            if (gridMoveDirection.y != +1) 
             {
                 gridMoveDirection.x = 0;
                 gridMoveDirection.y = -1;
@@ -72,8 +68,6 @@ public class DuoSnake : MonoBehaviour
         gridMoveTimer += Time.deltaTime;
         if (gridMoveTimer >= gridMoveTimerMax)
         {
-            //nese osht true i bjen qe u bo 1 sekond prej qe kena leviz
-            // na vyn me dit kah me qu tash
             gridPosition += gridMoveDirection;
             gridMoveTimer -= gridMoveTimerMax;
         }
