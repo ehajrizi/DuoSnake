@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -27,10 +28,12 @@ public class DisplayWord : MonoBehaviour
     static int index;
     //bool indexChanged = false;
     static string correctWord;
-    static string[] correctWordss;
+    static string c;
 
     public List<GameObject> colliderArray;
     private List<GameObject> colliders;
+
+    string[] correctWordss;
 
 
     void Start()
@@ -50,10 +53,10 @@ public class DisplayWord : MonoBehaviour
         if (wordOutput != null)
         {
             rectTra = GetComponentInChildren<RectTransform>();
-            rectTra.position = pos;
+            rectTra.anchoredPosition = pos;
         }
         
-        correctWord = " ";
+        correctWord = "";
         colliders = new List<GameObject>();
         Invoke("DisplaySentenceFromDB", 0f);
 
@@ -70,6 +73,11 @@ public class DisplayWord : MonoBehaviour
     {
         SceneManager.LoadSceneAsync("GoodJob");
     }
+    public void LoadSceneGameOver()
+    {
+        SceneManager.LoadSceneAsync("GameOver");
+    }
+    
 
     public async Task<int> ReturnCount()
     {
@@ -101,7 +109,7 @@ public class DisplayWord : MonoBehaviour
         string[] words2 = s.words;
         string[] extraWords = s.extra_words;
         string translation = s.translation;
-
+        
         count++; //1
         int a = 0;
         int b = 0;
@@ -109,17 +117,17 @@ public class DisplayWord : MonoBehaviour
         {
             while (a < words2.Length)
             {
-                wordOutput = Instantiate(wordOutputPrefab) as GameObject;
+                wordOutput = Instantiate(wordOutputPrefab, pos, Quaternion.identity) as GameObject;
                 wordOutputPrefab.GetComponentInChildren<TextMeshPro>().text = words2[a];
-                //wordOutputPrefab.GetComponentInChildren<TextMeshPro>().GetComponentInChildren<RectTransform>().anchoredPosition = new Vector3(UnityEngine.Random.Range(0, 1), UnityEngine.Random.Range(0, 1), 0);
+                //wordOutputPrefab.GetComponentInChildren<TextMeshPro>().GetComponentInChildren<RectTransform>().position = pos;
                 a++;
             }
 
             while (b < 2)
             {
-                wordOutput = Instantiate(wordOutputPrefab) as GameObject;
+                wordOutput = Instantiate(wordOutputPrefab, pos, Quaternion.identity) as GameObject;
                 wordOutputPrefab.GetComponentInChildren<TextMeshPro>().text = extraWords[UnityEngine.Random.Range(0, extraWords.Length)];
-                //wordOutputPrefab.GetComponentInChildren<TextMeshPro>().GetComponentInChildren<RectTransform>().anchoredPosition = new Vector3(UnityEngine.Random.Range(0, 1), UnityEngine.Random.Range(0, 1), 0);
+                //wordOutputPrefab.GetComponentInChildren<TextMeshPro>().GetComponentInChildren<RectTransform>().position = pos;
                 b++;
             }
         }
@@ -137,69 +145,75 @@ public class DisplayWord : MonoBehaviour
 
     private async void OnCollisionEnter2D(Collision2D collision)
     {
+
         Movement snake = collision.collider.GetComponent<Movement>();
-
-        if (collision.gameObject.tag == "Collider")
-        {
-            GameObject cContainer = collision.gameObject;
-            Debug.Log("cContainer: " + cContainer.name);
-
-            colliders.Add(cContainer);
-        }
-        for (int i = 0; i < colliders.Count; i++)
-        {
-            Debug.Log(i + " " + colliders[i]);
-        }
+        ContactPoint2D[] contactPoints = collision.contacts;
         if (snake != null)
         {
             var wo = DisplaySentenceFromDB();
             var res = await wo;
             string[] w = res;
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                print(contact.collider.name + " hit " + contact.otherCollider.name);
+                // Visualize the contact point
+                Debug.DrawRay(contact.point, contact.normal, Color.white);
+            }
 
-            
-            //colliderArray = colliders.Add(GameObject) as List<GameObject>;
-            //string[] correctWordss = null;
-
-            //gOtext += gameObject.GetComponent<TextMeshPro>().text;
-            Debug.Log(gameObject.GetComponent<TextMeshPro>().text);
 
             for (int i = 0; i < w.Length; i++)
             {
                 if (w.Contains(gameObject.GetComponent<TextMeshPro>().text))
                 {
-                    Debug.Log("Bravo!");
-                    correctWord += " " + gameObject.GetComponent<TextMeshPro>().text;
-                    //correctWordss[i++] = gameObject.GetComponent<TextMeshPro>().text;
-                    //correctWord += correctWordss[i];
-                    correctWords.text = correctWord;
-                    //correctWords.color = Color.green;
-                    correctWords.GetComponentInChildren<RectTransform>().position = new Vector3(0.4528f, 7.4f, 0);
-                    gameObject.SetActive(false);
-                    break;
-                }
-                else if (w.Contains(gameObject.GetComponent<TextMeshPro>().text) && !(w[i].Equals(gameObject.GetComponent<TextMeshPro>().text)))
-                {
-                    Debug.Log("Rendi Gabim!");
-                    gameObject.SetActive(false);
-                    SceneManager.LoadScene("GameOver");
-                    break;
+                    Debug.Log(gameObject.GetComponent<TextMeshPro>().text);
+                    correctWord += gameObject.GetComponent<TextMeshPro>().text + " ";
+
+                    if (w[i].Equals(correctWord.Split(' ')[i]))
+                    {
+                        Debug.Log("Bravo!" + gameObject.GetComponent<TextMeshPro>().text);
+                        gameObject.SetActive(false);
+                        correctWords.text = correctWord;
+                        correctWords.color = Color.green;
+                        correctWords.GetComponentInChildren<RectTransform>().position = new Vector3(0.4528f, 7.4f, 0);
+                        break;
+                    }
+                    else
+                    {
+                        Debug.Log("Rendi Gabim!");
+                        gameObject.SetActive(false);
+                        SceneManager.LoadScene("GameOver");
+                        break;
+                    }
                 }
                 else if (!(w.Contains(gameObject.GetComponent<TextMeshPro>().text)))
                 {
+                    Debug.Log(gameObject.GetComponent<TextMeshPro>().text);
+
                     Debug.Log("LOSER!");
                     gameObject.SetActive(false);
                     SceneManager.LoadScene("GameOver");
                     break;
                 }
                 gameObject.SetActive(false);
-            }
-            Debug.Log("Correct word: " + correctWord);
-            
-            if (correctWord.Split(' ').Length == (w.Length + 1))
-            {
-                Invoke("LoadScene", 1);
 
             }
+            Debug.Log("Correct word: " + correctWord);
+            correctWordss = correctWord.Split(' ');
+            correctWordss = correctWordss.Take(correctWordss.Length - 1).ToArray();
+            if (correctWord.Split(' ').Length == (w.Length + 1) && Enumerable.SequenceEqual(correctWordss, w))
+            {
+                SceneManager.LoadSceneAsync("GoodJob");
+            }
+            else if (correctWord.Split(' ').Length == (w.Length + 1) && !(Enumerable.SequenceEqual(correctWordss, w)))
+            {
+                correctWords.color = Color.red;
+                Invoke("LoadSceneGameOver", 1);
+            }
+
+
         }
+
+
     }
+
 }
