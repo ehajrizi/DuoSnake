@@ -60,6 +60,8 @@ public class SnakeRoute : MonoBehaviour
         
         correctWord = "";
         colliders = new List<GameObject>();
+
+       
         Invoke("DisplaySentenceFromDB", 0f);
 
     }

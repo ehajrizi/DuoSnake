@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    public event Action gameStarted, scoreIncremented, gameLost;
+    public event Action gameStarted;
 
     bool isPlaying = false;
 
@@ -17,29 +17,12 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (!isPlaying)
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                isPlaying = true;
-                StartGame();
-            }
-        }
+        StartGame();
     }
 
     public void StartGame()
     {
+        isPlaying = true;
         gameStarted?.Invoke();
-    }
-
-    public void LoseGame()
-    {
-        isPlaying = false;
-        gameLost?.Invoke();
-    }
-
-    public void IncrementScore()
-    {
-        scoreIncremented?.Invoke();
     }
 }

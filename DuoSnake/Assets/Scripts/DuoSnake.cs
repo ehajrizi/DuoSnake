@@ -20,10 +20,17 @@ public class DuoSnake : MonoBehaviour
 
     }
 
+    private void Start()
+    {
+        GameManager.instance.gameStarted += HandleInput;
+        GameManager.instance.gameStarted += HandleGridMovement;
+        
+    }
+
     private void Update()
     {
-        HandleInput();
-        HandleGridMovement();
+        //HandleInput();
+        //HandleGridMovement();
     }
     private void HandleInput()
     {
